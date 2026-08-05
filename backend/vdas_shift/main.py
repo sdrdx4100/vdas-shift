@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -7,11 +9,18 @@ from . import database
 from .api import router
 
 
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    database.init()
+    yield
+
+
 def create_app() -> FastAPI:
     app = FastAPI(
         title="VDAS Shift API",
         description="車両計測データから実車ベースのシフト境界を推定するローカルAPI",
         version="0.1.0",
+        lifespan=lifespan,
     )
     app.add_middleware(
         CORSMiddleware,
@@ -21,10 +30,6 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
     app.include_router(router)
-
-    @app.on_event("startup")
-    def startup() -> None:
-        database.init()
 
     return app
 
