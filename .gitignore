@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.next/
+.wrangler/
+.sites-runtime/
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.py[cod]
+data/
+.env*
+!.env.example
